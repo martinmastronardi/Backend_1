@@ -1,24 +1,16 @@
 import express from 'express'
+import ProManager from './Class/ProdManager.js'
+import { __dirname } from './data/utils.js'
 
 const app = express()
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-app.get('/', (req, res) => {
-    res.send('Esto fue enviado desde el servidor')
-})
+const proManager = new ProManager(__dirname + '/data/products.json')
 
-// guarda querys
-app.get('/usuarios', (req, res) => {
-    console.log(req.query)
-    res.send('usuarios')
-})
-
-// guarda parametros
-app.get('/usuarios/:id', (req, res) => {
-    console.log(req.params.id)
-    res.send('params')})
-
-app.get('/productos', (req, res) => {
-    res.send('productos')
+app.post('/', (req, res) => {
+    proManager.addPord()
+    res.json({menssage: 'ok'})
 })
 
 app.listen(8080, () => 

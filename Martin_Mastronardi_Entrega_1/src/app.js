@@ -10,9 +10,16 @@ const proManager = new ProManager(__dirname + '/data/products.json')
 
 app.post('/', async (req, res) => {
     console.log('Entra al POST')
-    await proManager.addPord()
+
+    const nuevoProd = req.body
+    await proManager.addPord(nuevoProd)
     console.log('se creo el archivo')
-    res.json({menssage: 'Post ok'})
+    res.status(201).json({ message: 'Se agrego el producto' })
+})
+
+app.get('/', async (req, res) => {
+    const prodList = await NavigationPreloadManager.getProdList()
+    res.status(201).json({resultado:prodList})
 })
 
 app.listen(8080, () => 

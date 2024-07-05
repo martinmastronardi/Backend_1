@@ -1,30 +1,61 @@
 import fs from 'node:fs/promises';
 
-export class CartManager {
-constructor(path){
-        this.path = path
-        this.carts = []
+class CartManager {
+    constructor(path) {
+        this.path = path;
+        this.carts = [];
     }
 
+    async getCarts() {
+        try {
+            const data = await fs.readFile(this.path, 'utf-8');
+            this.carts = JSON.parse(data).data || [];
+            return [...this.carts];
+        } catch (error) {
+            console.error('Error reading carts file:', error);
+            return [];
+        }
+    }
 
-    async agregarProdEnCart(cid, pId){
-        this.carts = await this.getCarts();
-        const cardsUpdated = this.carts.map((cart)=>{
-            if(cart.id !== cid) return cart
-            
-            const indexProd = cart.prod.findIndex(prod => prod.id === pId);
-            if(indexProd === -1){
-                cart.products.push({ id: pId, quantity: 1 })
-                return cart;
+    async getCartById(id) {
+        await this.getCarts();
+        return this.carts.find(cart => cart.id === id);
+    }
+
+    async addCart() {
+        await this.getCarts();
+        const newCart = {
+            id: this.carts.length ? this.carts[this.carts.length - 1].id + 1 : 1,
+            products: []
+        };
+        this.carts.push(newCart);
+        await this.saveCarts();
+        return newCart;
+    }
+
+    async agregarProdEnCart(cid, pId) {
+        await this.getCarts();
+        const cart = this.carts.find(cart => cart.id === cid);
+        if (cart) {
+            const productIndex = cart.products.findIndex(prod => prod.id === pId);
+            if (productIndex === -1) {
+                cart.products.push({ id: pId, quantity: 1 });
+            } else {
+                cart.products[productIndex].quantity += 1;
             }
-            cart.prod[indexProd] = { ...cart.prod[indexProd], quantity: cart.prod[indexProd].quantity + 1 }
+            await this.saveCarts();
             return cart;
-            
-        })
-        this.carts = [...cardsUpdated]
-        await fs.writeFile(this.path,JSON.stringify({ data: this.carts }))
+        }
+        return null;
     }
 
+    async saveCarts() {
+        try {
+            await fs.writeFile(this.path, JSON.stringify({ data: this.carts }, null, 2));
+        } catch (error) {
+            console.error('Error saving carts file:', error);
+        }
+    }
 }
 
-export default CartManager
+export default CartManager;

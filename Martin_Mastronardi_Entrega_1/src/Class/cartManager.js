@@ -7,14 +7,14 @@ constructor(path){
     }
 
 
-    async agregarProdEnCart(id, prodId){
+    async agregarProdEnCart(cid, pId){
         this.carts = await this.getCarts();
         const cardsUpdated = this.carts.map((cart)=>{
-            if(cart.id !== id) return cart
+            if(cart.id !== cid) return cart
             
-            const indexProd = cart.prod.findIndex(prod => prod.id === prodId);
+            const indexProd = cart.prod.findIndex(prod => prod.id === pId);
             if(indexProd === -1){
-                cart.products.push({ id: prodId, quantity: 1 })
+                cart.products.push({ id: pId, quantity: 1 })
                 return cart;
             }
             cart.prod[indexProd] = { ...cart.prod[indexProd], quantity: cart.prod[indexProd].quantity + 1 }
@@ -26,3 +26,5 @@ constructor(path){
     }
 
 }
+
+export default CartManager

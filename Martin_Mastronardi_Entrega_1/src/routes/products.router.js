@@ -54,12 +54,12 @@ productsRoute.put('/:pid', async (req, res) => {
         const updatedProduct = req.body;
         const product = await prodManager.updateProd(Number(pid), updatedProduct);
         if (product) {
-            res.json({ message: 'Producto actualizado', product });
+            res.json({ message: 'Producto actuazado', product });
         } else {
             res.status(404).json({ message: 'Producto no encontrado' });
     }
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar el producto', error });
+        res.status(500).json({ message: 'Eror al actualizar el producto', error });
     }
 });
 

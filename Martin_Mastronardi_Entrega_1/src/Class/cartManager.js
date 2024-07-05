@@ -12,7 +12,7 @@ class CartManager {
             this.carts = JSON.parse(data).data || [];
             return [...this.carts];
         } catch (error) {
-            console.error('Error reading carts file:', error);
+            console.error('Error al leer el archivo:', error);
             return [];
         }
     }
@@ -53,7 +53,7 @@ class CartManager {
         try {
             await fs.writeFile(this.path, JSON.stringify({ data: this.carts }, null, 2));
         } catch (error) {
-            console.error('Error saving carts file:', error);
+            console.error('Error al guardar los carritos:', error);
         }
     }
 }

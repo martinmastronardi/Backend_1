@@ -12,5 +12,5 @@ app.use('/api/carts', cartsRoute);
 
 const PORT = 8080;
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log('Servidor OK, PUERTO 8080');
 });

@@ -12,7 +12,7 @@ class ProdManager {
             this.prodList = JSON.parse(data).data || [];
             return [...this.prodList];
         } catch (error) {
-            console.error('Error reading products file:', error);
+            console.error('Error al leer el archivo:', error);
             return [];
         }
     }
@@ -66,7 +66,7 @@ class ProdManager {
         try {
             await fs.promises.writeFile(this.path, JSON.stringify({ data: this.prodList }, null, 2));
         } catch (error) {
-            console.error('Error saving products file:', error);
+            console.error('Error al guardar los productos:', error);
         }
     }
 }

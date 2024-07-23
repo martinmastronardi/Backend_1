@@ -1,0 +1,67 @@
+{
+  "data": [
+    [
+      [
+        {
+          "title": "Arroz"
+        }
+      ],
+      {
+        "title": "Fideos"
+      }
+    ],
+    {
+      "title": "azucar"
+    },
+    {
+      "id": null,
+      "title": "Producto 1",
+      "description": "Descripción del Producto 1",
+      "code": "PROD1",
+      "price": 100,
+      "status": true,
+      "stock": 50,
+      "category": "Categoría 1",
+      "thumbnails": [
+        "url1",
+        "url2"
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Producto 1 Actualizado",
+      "description": "Descripción actualizada del Producto 1",
+      "code": "PROD1",
+      "price": 120,
+      "status": true,
+      "stock": 30,
+      "category": "Categoría Actualizada",
+      "thumbnails": []
+    },
+    {
+      "id": 4,
+      "title": "Producto prueba 2",
+      "description": "Descripción del Producto prueba 2",
+      "code": "PROD2",
+      "price": 100,
+      "status": true,
+      "stock": 50,
+      "category": "Categoría 1",
+      "thumbnails": [
+        "url1",
+        "url2"
+      ]
+    },
+    {
+      "id": 5,
+      "title": "caramelos sugus",
+      "description": "sugus  multifruta",
+      "code": "3322",
+      "price": "20",
+      "status": true,
+      "stock": "300",
+      "category": "golosinas",
+      "thumbnails": []
+    }
+  ]
+}

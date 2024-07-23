@@ -1,18 +1,5 @@
 {
   "data": [
-    [
-      [
-        {
-          "title": "Arroz"
-        }
-      ],
-      {
-        "title": "Fideos"
-      }
-    ],
-    {
-      "title": "azucar"
-    },
     {
       "id": null,
       "title": "Producto 1",
@@ -61,6 +48,28 @@
       "status": true,
       "stock": "300",
       "category": "golosinas",
+      "thumbnails": []
+    },
+    {
+      "id": 6,
+      "title": "vino fino",
+      "description": "vino de bodega",
+      "code": "3333",
+      "price": "2000",
+      "status": true,
+      "stock": "10",
+      "category": "bebidas",
+      "thumbnails": []
+    },
+    {
+      "id": 7,
+      "title": "stela",
+      "description": "cerveza rubia",
+      "code": "8888",
+      "price": "1300",
+      "status": true,
+      "stock": "50",
+      "category": "bebidas",
       "thumbnails": []
     }
   ]

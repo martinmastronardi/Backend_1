@@ -3,43 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de productos en Tiempo real</title>
+    <title>Lista de Productos en Tiempo Real</title>
+    <style>
+        /* Estilos para la cuadrícula de productos */
+        #product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columnas, puedes ajustar el número */
+            gap: 10px; /* Espacio entre los productos */
+            margin-bottom: 20px;
+        }
+
+        .product-item {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        .product-item h2 {
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        .product-item p {
+            margin: 5px 0;
+        }
+
+        .product-item button {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
     <h1>Lista de Productos en Tiempo Real</h1>
-    <ul id="product-list">
+    
+    <!-- Lista de Productos -->
+    <h2>Productos</h2>
+    <div id="product-grid">
         {{#each products}}
-        <li>{{this.title}} - {{this.price}}</li>
+        <div class="product-item">
+            <h2>{{this.title}}</h2>
+            <p><strong>Descripción:</strong> {{this.description}}</p>
+            <p><strong>Código:</strong> {{this.code}}</p>
+            <p><strong>Precio:</strong> {{this.price}}</p>
+            <p><strong>Stock:</strong> {{this.stock}}</p>
+            <p><strong>Categoría:</strong> {{this.category}}</p>
+            <button onclick="deleteProduct('{{this._id}}')">Eliminar</button>
+            <button onclick="showUpdateForm('{{this._id}}')">Actualizar</button>
+            <form id="update-form-{{this._id}}" style="display:none;" onsubmit="updateProduct(event, '{{this._id}}')">
+                <input type="text" id="update-title-{{this._id}}" placeholder="Título" value="{{this.title}}" required>
+                <input type="text" id="update-description-{{this._id}}" placeholder="Descripción" value="{{this.description}}" required>
+                <input type="text" id="update-code-{{this._id}}" placeholder="Código" value="{{this.code}}" required>
+                <input type="number" id="update-price-{{this._id}}" placeholder="Precio" value="{{this.price}}" required>
+                <input type="number" id="update-stock-{{this._id}}" placeholder="Stock" value="{{this.stock}}" required>
+                <input type="text" id="update-category-{{this._id}}" placeholder="Categoría" value="{{this.category}}" required>
+                <button type="submit">Actualizar</button>
+            </form>
+        </div>
         {{/each}}
-    </ul>
+    </div>
 
+    <!-- Formulario para Agregar Productos -->
     <h2>Agregar Producto</h2>
     <form id="product-form">
-        <input type="text" id="title" placeholder="Titulo" required>
-        <input type="text" id="description" placeholder="Descripcion" required>
-        <input type="text" id="code" placeholder="Codigo" required>
+        <input type="text" id="title" placeholder="Título" required>
+        <input type="text" id="description" placeholder="Descripción" required>
+        <input type="text" id="code" placeholder="Código" required>
         <input type="number" id="price" placeholder="Precio" required>
         <input type="number" id="stock" placeholder="Stock" required>
-        <input type="text" id="category" placeholder="Categoria" required>
+        <input type="text" id="category" placeholder="Categoría" required>
         <button type="submit">Agregar</button>
     </form>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-
-        const productList = document.getElementById('product-list');
+        const productGrid = document.getElementById('product-grid');
         const productForm = document.getElementById('product-form');
 
+        // Actualizar lista de productos en tiempo real
         socket.on('updateProducts', (products) => {
-            productList.innerHTML = '';
+            productGrid.innerHTML = '';
             products.forEach(product => {
-                const li = document.createElement('li');
-                li.textContent = `${product.title} - ${product.price}`;
-                productList.appendChild(li);
+                const div = document.createElement('div');
+                div.className = 'product-item';
+                div.innerHTML = `
+                    <h2>${product.title}</h2>
+                    <p><strong>Descripción:</strong> ${product.description}</p>
+                    <p><strong>Código:</strong> ${product.code}</p>
+                    <p><strong>Precio:</strong> ${product.price}</p>
+                    <p><strong>Stock:</strong> ${product.stock}</p>
+                    <p><strong>Categoría:</strong> ${product.category}</p>
+                    <button onclick="deleteProduct('${product._id}')">Eliminar</button>
+                    <button onclick="showUpdateForm('${product._id}')">Actualizar</button>
+                    <form id="update-form-${product._id}" style="display:none;" onsubmit="updateProduct(event, '${product._id}')">
+                        <input type="text" id="update-title-${product._id}" placeholder="Título" value="${product.title}" required>
+                        <input type="text" id="update-description-${product._id}" placeholder="Descripción" value="${product.description}" required>
+                        <input type="text" id="update-code-${product._id}" placeholder="Código" value="${product.code}" required>
+                        <input type="number" id="update-price-${product._id}" placeholder="Precio" value="${product.price}" required>
+                        <input type="number" id="update-stock-${product._id}" placeholder="Stock" value="${product.stock}" required>
+                        <input type="text" id="update-category-${product._id}" placeholder="Categoría" value="${product.category}" required>
+                        <button type="submit">Actualizar</button>
+                    </form>
+                `;
+                productGrid.appendChild(div);
             });
         });
 
+        // Agregar producto
         productForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const product = {
@@ -52,8 +124,33 @@
                 thumbnails: []
             };
             socket.emit('addProduct', product);
-            productForm.reset();
+            e.target.reset();
         });
+
+        // Actualizar producto
+        function showUpdateForm(id) {
+            document.getElementById(`update-form-${id}`).style.display = 'block';
+        }
+
+        function updateProduct(event, id) {
+            event.preventDefault();
+            const updatedProduct = {
+                title: document.getElementById(`update-title-${id}`).value,
+                description: document.getElementById(`update-description-${id}`).value,
+                code: document.getElementById(`update-code-${id}`).value,
+                price: document.getElementById(`update-price-${id}`).value,
+                stock: document.getElementById(`update-stock-${id}`).value,
+                category: document.getElementById(`update-category-${id}`).value,
+                thumbnails: []
+            };
+            socket.emit('updateProduct', id, updatedProduct);
+        }
+
+        // Eliminar producto
+        function deleteProduct(id) {
+            socket.emit('deleteProduct', id);
+        }
     </script>
+
 </body>
 </html>

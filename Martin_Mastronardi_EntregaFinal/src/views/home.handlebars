@@ -3,14 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Productos</title>
 </head>
 <body>
     <h1>Lista de Productos</h1>
-    <ul>
-        {{#each products}}
-        <li>{{this.title}} - {{this.price}}</li>
-        {{/each}}
-    </ul>
+    
+    {{#if products.length}}
+        <ul>
+            {{#each products}}
+                <li>
+                    <h2>{{this.title}}</h2>
+                    <p>{{this.description}}</p>
+                    <p>Precio: {{this.price}}</p>
+                    <p>Stock: {{this.stock}}</p>
+                </li>
+            {{/each}}
+        </ul>
+        
+        <div>
+            {{#if hasPrevPage}}
+                <a href="{{prevLink}}">Página anterior</a>
+            {{/if}}
+            {{#if hasNextPage}}
+                <a href="{{nextLink}}">Página siguiente</a>
+            {{/if}}
+        </div>
+    {{else}}
+        <p>No hay productos disponibles.</p>
+    {{/if}}
 </body>
 </html>

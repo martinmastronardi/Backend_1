@@ -71,6 +71,28 @@
       "stock": "50",
       "category": "bebidas",
       "thumbnails": []
+    },
+    {
+      "id": 8,
+      "title": "arroz",
+      "description": "arroz",
+      "code": "1234",
+      "price": "1300",
+      "status": true,
+      "stock": "20",
+      "category": "comida",
+      "thumbnails": []
+    },
+    {
+      "id": 9,
+      "title": "prueba",
+      "description": "prueba",
+      "code": "4444",
+      "price": "200",
+      "status": true,
+      "stock": "30",
+      "category": "",
+      "thumbnails": []
     }
   ]
 }

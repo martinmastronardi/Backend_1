@@ -8,7 +8,7 @@ import productsRoute from './routes/products.router.js';
 import cartsRoute from './routes/carts.router.js';
 import viewsRouter from './routes/views.router.js';
 import mongoose from 'mongoose';
-import Product from './models/product.model.js'; // Importar el modelo Product
+import Product from './models/product.model.js';
 import Cart from './models/cart.model.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +23,7 @@ const connectDB = async () => {
         console.log('MongoDB conectado exitosamente');
     } catch (error) {
         console.error('Error al conectar a MongoDB:', error.message);
-        process.exit(1); // Detiene la aplicación si no puede conectarse a MongoDB
+        process.exit(1);
     }
 };
 
@@ -33,7 +33,6 @@ const app = express();
 const server = createServer(app);
 const io = new SocketIO(server);
 
-// Configuración de Handlebars
 app.engine('handlebars', engine({
     defaultLayout: 'main',
     layoutsDir: path.join(__dirname, 'views', 'layouts'),
@@ -60,7 +59,7 @@ io.on('connection', (socket) => {
         try {
             const newProduct = new Product(product);
             await newProduct.save();
-            const products = await Product.find(); // O ajusta esto según el caso
+            const products = await Product.find();
             io.emit('updateProducts', products);
         } catch (error) {
             console.error('Error al agregar el producto:', error);
@@ -69,24 +68,17 @@ io.on('connection', (socket) => {
 
     socket.on('createCart', async (quantity) => {
         try {
-            // Crear un nuevo carrito en la base de datos
             const newCart = await Cart.create({
                 products: []
             });
-    
-            // Obtener todos los productos
             const products = await Product.find();
-    
-            // Agregar todos los productos al carrito con la cantidad especificada
             const cartProducts = products.map(product => ({
                 productId: product._id,
                 quantity: quantity
             }));
     
-            // Actualizar el carrito con los productos
             await Cart.findByIdAndUpdate(newCart._id, { products: cartProducts });
     
-            // Enviar una respuesta al cliente
             socket.emit('cartCreated', newCart._id);
         } catch (error) {
             console.error('Error creating cart:', error);
@@ -96,7 +88,7 @@ io.on('connection', (socket) => {
     socket.on('deleteProduct', async (id) => {
         try {
             await Product.findByIdAndDelete(id);
-            const products = await Product.find(); // O ajusta esto según el caso
+            const products = await Product.find();
             io.emit('updateProducts', products);
         } catch (error) {
             console.error('Error al eliminar el producto:', error);

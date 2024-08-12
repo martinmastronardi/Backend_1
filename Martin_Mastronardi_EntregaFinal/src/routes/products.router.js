@@ -1,13 +1,12 @@
-// src/routes/products.router.js
 import { Router } from 'express';
-import Product from '../models/product.model.js'; // Ajusta el path si es necesario
+import Product from '../models/product.model.js';
 
 const productsRoute = Router();
 
 productsRoute.get('/', async (req, res) => {
     try {
         const { limit = 10, page = 1, sort = '', query = '' } = req.query;
-        const sortOptions = sort ? { [sort]: 1 } : {}; // Asume que `sort` es el campo por el que ordenar
+        const sortOptions = sort ? { [sort]: 1 } : {}; 
         const products = await Product.find({
             $or: [
                 { title: { $regex: query, $options: 'i' } },

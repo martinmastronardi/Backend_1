@@ -15,10 +15,8 @@ viewsRouter.get('/', async (req, res) => {
 
 viewsRouter.get('/cart', async (req, res) => {
     try {
-        // Supongamos que solo tienes un carrito para el usuario actual
-        const cart = await Cart.findOne({ /* condición para encontrar el carrito */ });
-        
-        // Renderiza la vista del carrito y pasa los productos
+          const cart = await Cart.findOne({});
+    
         res.render('cart', { cart });
     } catch (error) {
         console.error('Error al obtener el carrito:', error);

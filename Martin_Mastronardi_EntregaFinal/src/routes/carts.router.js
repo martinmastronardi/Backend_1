@@ -4,7 +4,6 @@ import Product from '../models/product.model.js';
 
 const router = express.Router();
 
-// Añadir producto al carrito
 router.post('/:cid/products/:pid', async (req, res) => {
     const { cid, pid } = req.params;
     const { quantity } = req.body;
@@ -33,16 +32,11 @@ router.post('/:cid/products/:pid', async (req, res) => {
     }
 });
 
-// Finalizar compra
 router.post('/:cid/checkout', async (req, res) => {
     const { cid } = req.params;
 
     try {
         const cart = await Cart.findById(cid).populate('products.product');
-
-        // Lógica para procesar el pago y finalizar la compra
-
-        // Eliminar productos del carrito
         cart.products = [];
         await cart.save();
 
@@ -52,6 +46,5 @@ router.post('/:cid/checkout', async (req, res) => {
     }
 });
 
-// Otros endpoints (eliminar producto del carrito, actualizar cantidad, etc.) irán aquí
 
 export default router;

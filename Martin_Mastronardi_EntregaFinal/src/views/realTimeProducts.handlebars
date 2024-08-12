@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Productos en Tiempo Real</title>
     <style>
-        /* Estilos para la cuadrícula de productos */
         #product-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 columnas, puedes ajustar el número */
-            gap: 10px; /* Espacio entre los productos */
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 10px; 
             margin-bottom: 20px;
         }
 
@@ -38,7 +37,7 @@
 <body>
     <h1>Lista de Productos en Tiempo Real</h1>
     
-    <!-- Lista de Productos -->
+   
     <h2>Productos</h2>
     <div id="product-grid">
         {{#each products}}
@@ -64,8 +63,7 @@
         {{/each}}
     </div>
 
-    <!-- Formulario para Agregar Productos -->
-    <h2>Agregar Producto</h2>
+       <h2>Agregar Producto</h2>
     <form id="product-form">
         <input type="text" id="title" placeholder="Título" required>
         <input type="text" id="description" placeholder="Descripción" required>
@@ -82,7 +80,7 @@
         const productGrid = document.getElementById('product-grid');
         const productForm = document.getElementById('product-form');
 
-        // Actualizar lista de productos en tiempo real
+   
         socket.on('updateProducts', (products) => {
             productGrid.innerHTML = '';
             products.forEach(product => {
@@ -111,7 +109,7 @@
             });
         });
 
-        // Agregar producto
+   
         productForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const product = {
@@ -127,7 +125,7 @@
             e.target.reset();
         });
 
-        // Actualizar producto
+
         function showUpdateForm(id) {
             document.getElementById(`update-form-${id}`).style.display = 'block';
         }
@@ -146,7 +144,6 @@
             socket.emit('updateProduct', id, updatedProduct);
         }
 
-        // Eliminar producto
         function deleteProduct(id) {
             socket.emit('deleteProduct', id);
         }

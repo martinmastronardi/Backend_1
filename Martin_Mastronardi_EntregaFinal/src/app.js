@@ -66,25 +66,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('createCart', async (quantity) => {
-        try {
-            const newCart = await Cart.create({
-                products: []
-            });
-            const products = await Product.find();
-            const cartProducts = products.map(product => ({
-                productId: product._id,
-                quantity: quantity
-            }));
-    
-            await Cart.findByIdAndUpdate(newCart._id, { products: cartProducts });
-    
-            socket.emit('cartCreated', newCart._id);
-        } catch (error) {
-            console.error('Error creating cart:', error);
-            socket.emit('error', 'Failed to create cart');
-        }
-    });
     socket.on('deleteProduct', async (id) => {
         try {
             await Product.findByIdAndDelete(id);
@@ -103,6 +84,42 @@ io.on('connection', (socket) => {
             console.error('Error al actualizar el producto:', error);
         }
     });
+    socket.on('addToCart', async ({ productId, quantity }) => {
+        try {
+            let cart = await Cart.findOne({ status: 'active' });
+    
+            if (!cart) {
+                cart = new Cart({
+                    products: [],
+                    status: 'active'
+                });
+            }
+    
+            const productIndex = cart.products.findIndex(p => p.productId.toString() === productId);
+    
+            if (productIndex !== -1) {
+                cart.products[productIndex].quantity += quantity;
+            } else {
+                cart.products.push({ productId, quantity });
+            }
+    
+            const product = await Product.findById(productId);
+            if (product.stock < quantity) {
+                socket.emit('error', 'Stock insuficiente');
+                return;
+            }
+            product.stock -= quantity;
+            await product.save();
+            await cart.save();
+    
+            socket.emit('cartUpdated', cart);
+            io.emit('updateProducts', await Product.find());
+        } catch (error) {
+            console.error('Error al agregar al carrito:', error);
+            socket.emit('error', 'Error al agregar al carrito');
+        }
+    });    
+               
 
 });
 

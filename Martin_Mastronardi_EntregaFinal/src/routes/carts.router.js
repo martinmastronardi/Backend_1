@@ -15,11 +15,11 @@ router.post('/:cid/products/:pid', async (req, res) => {
         if (!product) return res.status(404).json({ status: 'error', message: 'Producto no encontrado' });
         if (product.stock < quantity) return res.status(400).json({ status: 'error', message: 'Stock insuficiente' });
 
-        const existingProductIndex = cart.products.findIndex(item => item.product.toString() === pid);
+        const existingProductIndex = cart.products.findIndex(item => item.productId.toString() === pid);
         if (existingProductIndex !== -1) {
             cart.products[existingProductIndex].quantity += quantity;
         } else {
-            cart.products.push({ product: pid, quantity });
+            cart.products.push({ productId: pid, quantity });
         }
 
         product.stock -= quantity;
@@ -31,20 +31,21 @@ router.post('/:cid/products/:pid', async (req, res) => {
         res.status(500).json({ status: 'error', message: error.message });
     }
 });
-
-router.post('/:cid/checkout', async (req, res) => {
-    const { cid } = req.params;
-
+router.post('/finalize', async (req, res) => {
     try {
-        const cart = await Cart.findById(cid).populate('products.product');
-        cart.products = [];
+        const cart = await Cart.findOne({ status: 'active' });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'No hay un carrito activo para finalizar' });
+        }
+
+        cart.status = 'purchased';
         await cart.save();
 
-        res.json({ status: 'success', message: 'Compra finalizada con éxito' });
+        res.json({ message: 'Compra finalizada con éxito' });
     } catch (error) {
-        res.status(500).json({ status: 'error', message: error.message });
+        console.error('Error al finalizar la compra:', error);
+        res.status(500).json({ message: 'Error al finalizar la compra' });
     }
 });
-
-
 export default router;

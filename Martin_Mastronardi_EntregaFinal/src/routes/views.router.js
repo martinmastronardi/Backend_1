@@ -13,10 +13,10 @@ viewsRouter.get('/', async (req, res) => {
     }
 });
 
+
 viewsRouter.get('/cart', async (req, res) => {
     try {
-          const cart = await Cart.findOne({});
-    
+        const cart = await Cart.findOne({ status: 'active' }).populate('products.productId');
         res.render('cart', { cart });
     } catch (error) {
         console.error('Error al obtener el carrito:', error);

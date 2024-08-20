@@ -59,6 +59,7 @@
                 <input type="text" id="update-category-{{this._id}}" placeholder="Categoría" value="{{this.category}}" required>
                 <button type="submit">Actualizar</button>
             </form>
+            <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
         </div>
         {{/each}}
     </div>
@@ -74,6 +75,11 @@
         <button type="submit">Agregar</button>
     </form>
 
+<h2>Carrito de Compras</h2>
+<ul id="cart-items">
+</ul>
+<button id="finalize-button" onclick="finalizePurchase()">Finalizar Compra</button>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
@@ -81,33 +87,35 @@
         const productForm = document.getElementById('product-form');
 
    
-        socket.on('updateProducts', (products) => {
-            productGrid.innerHTML = '';
-            products.forEach(product => {
-                const div = document.createElement('div');
-                div.className = 'product-item';
-                div.innerHTML = `
-                    <h2>${product.title}</h2>
-                    <p><strong>Descripción:</strong> ${product.description}</p>
-                    <p><strong>Código:</strong> ${product.code}</p>
-                    <p><strong>Precio:</strong> ${product.price}</p>
-                    <p><strong>Stock:</strong> ${product.stock}</p>
-                    <p><strong>Categoría:</strong> ${product.category}</p>
-                    <button onclick="deleteProduct('${product._id}')">Eliminar</button>
-                    <button onclick="showUpdateForm('${product._id}')">Actualizar</button>
-                    <form id="update-form-${product._id}" style="display:none;" onsubmit="updateProduct(event, '${product._id}')">
-                        <input type="text" id="update-title-${product._id}" placeholder="Título" value="${product.title}" required>
-                        <input type="text" id="update-description-${product._id}" placeholder="Descripción" value="${product.description}" required>
-                        <input type="text" id="update-code-${product._id}" placeholder="Código" value="${product.code}" required>
-                        <input type="number" id="update-price-${product._id}" placeholder="Precio" value="${product.price}" required>
-                        <input type="number" id="update-stock-${product._id}" placeholder="Stock" value="${product.stock}" required>
-                        <input type="text" id="update-category-${product._id}" placeholder="Categoría" value="${product.category}" required>
-                        <button type="submit">Actualizar</button>
-                    </form>
-                `;
-                productGrid.appendChild(div);
-            });
-        });
+       socket.on('updateProducts', (products) => {
+    productGrid.innerHTML = '';
+    products.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product-item';
+        div.innerHTML = `
+            <h2>${product.title}</h2>
+            <p><strong>Descripción:</strong> ${product.description}</p>
+            <p><strong>Código:</strong> ${product.code}</p>
+            <p><strong>Precio:</strong> ${product.price}</p>
+            <p><strong>Stock:</strong> ${product.stock}</p>
+            <p><strong>Categoría:</strong> ${product.category}</p>
+            <button onclick="addToCart('${product._id}')">Agregar al carrito</button>
+            <button onclick="deleteProduct('${product._id}')">Eliminar</button>
+            <button onclick="showUpdateForm('${product._id}')">Actualizar</button>
+            <form id="update-form-${product._id}" style="display:none;" onsubmit="updateProduct(event, '${product._id}')">
+                <input type="text" id="update-title-${product._id}" placeholder="Título" value="${product.title}" required>
+                <input type="text" id="update-description-${product._id}" placeholder="Descripción" value="${product.description}" required>
+                <input type="text" id="update-code-${product._id}" placeholder="Código" value="${product.code}" required>
+                <input type="number" id="update-price-${product._id}" placeholder="Precio" value="${product.price}" required>
+                <input type="number" id="update-stock-${product._id}" placeholder="Stock" value="${product.stock}" required>
+                <input type="text" id="update-category-${product._id}" placeholder="Categoría" value="${product.category}" required>
+                <button type="submit">Actualizar</button>
+            </form>
+        `;
+        productGrid.appendChild(div);
+    });
+});
+
 
    
         productForm.addEventListener('submit', (e) => {
@@ -147,6 +155,46 @@
         function deleteProduct(id) {
             socket.emit('deleteProduct', id);
         }
+
+function addToCart(productId) {
+    const quantity = parseInt(prompt("Ingrese la cantidad que desea agregar al carrito:", "1"));
+    if (quantity && !isNaN(quantity) && quantity > 0) {
+        socket.emit('addToCart', { productId, quantity });
+    } else {
+        alert("Cantidad no válida");
+    }
+}
+
+socket.on('cartUpdated', (cart) => {
+    const cartItems = document.getElementById('cart-items');
+    cartItems.innerHTML = '';
+
+    cart.products.forEach(item => {
+        const li = document.createElement('li');
+        li.innerText = `Producto: ${item.productId}, Cantidad: ${item.quantity}`;
+        cartItems.appendChild(li);
+    });
+});
+async function finalizePurchase() {
+    try {
+        const response = await fetch('/api/carts/finalize', {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('Compra finalizada con éxito');
+            window.location.reload();
+        } else {
+            alert('Error al finalizar la compra: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error al finalizar la compra:', error);
+        alert('Error al finalizar la compra');
+    }
+}
+
     </script>
 
 </body>
